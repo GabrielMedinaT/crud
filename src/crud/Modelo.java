@@ -1,18 +1,37 @@
 package crud;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Modelo {
     private Connection connection;
 
     public Modelo() {
         try {
-            connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Tienda", "root", "root1234");
+            connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306", "root", "root1234");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // Creación de la base de datos
+    public void createDatabase() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("CREATE DATABASE IF NOT EXISTS tienda");
+        statement.close();
+    }
+
+    // Conexión a la base de datos
+    public void connect() throws SQLException {
+        connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/tienda", "root", "root1234");
+    }
+
+    // Creación de tablas en la base de datos con sus respectivas columnas y con delete on cascade
+    public void createTables() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Customers (customer_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), address VARCHAR(255), email VARCHAR(255))");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Orders (order_id INT PRIMARY KEY AUTO_INCREMENT, order_date DATE, customer_id INT, FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE)");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Shipments (shipment_id INT PRIMARY KEY AUTO_INCREMENT, shipment_date DATE, order_id INT, FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE)");
+        statement.close();
     }
 
     // Métodos para Customers
@@ -23,6 +42,7 @@ public class Modelo {
         ps.setString(2, address);
         ps.setString(3, email);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void updateCustomer(int customerId, String name, String address, String email) throws SQLException {
@@ -33,6 +53,7 @@ public class Modelo {
         ps.setString(3, email);
         ps.setInt(4, customerId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void deleteCustomer(int customerId) throws SQLException {
@@ -40,6 +61,7 @@ public class Modelo {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, customerId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public ResultSet findCustomer(int customerId) throws SQLException {
@@ -56,6 +78,7 @@ public class Modelo {
         ps.setDate(1, new java.sql.Date(orderDate.getTime()));
         ps.setInt(2, customerId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void updateOrder(int orderId, Date orderDate, int customerId) throws SQLException {
@@ -65,6 +88,7 @@ public class Modelo {
         ps.setInt(2, customerId);
         ps.setInt(3, orderId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void deleteOrder(int orderId) throws SQLException {
@@ -72,6 +96,7 @@ public class Modelo {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, orderId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public ResultSet findOrder(int orderId) throws SQLException {
@@ -88,6 +113,7 @@ public class Modelo {
         ps.setDate(1, new java.sql.Date(shipmentDate.getTime()));
         ps.setInt(2, orderId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void updateShipment(int shipmentId, Date shipmentDate, int orderId) throws SQLException {
@@ -97,6 +123,7 @@ public class Modelo {
         ps.setInt(2, orderId);
         ps.setInt(3, shipmentId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public void deleteShipment(int shipmentId) throws SQLException {
@@ -104,6 +131,7 @@ public class Modelo {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, shipmentId);
         ps.executeUpdate();
+        ps.close();
     }
 
     public ResultSet findShipment(int shipmentId) throws SQLException {
