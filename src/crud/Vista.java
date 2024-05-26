@@ -1,10 +1,17 @@
 package crud;
 
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 public class Vista extends JFrame {
@@ -18,7 +25,9 @@ public class Vista extends JFrame {
     private JButton btnFindCustomer = new JButton("Buscar");
 
     private JTextField txtOrderId = new JTextField(10);
-    private JTextField txtOrderDate = new JTextField(10);
+    private UtilDateModel modelOrderDate = new UtilDateModel();
+    private JDatePanelImpl datePanelOrderDate = new JDatePanelImpl(modelOrderDate, new Properties());
+    private JDatePickerImpl datePickerOrderDate = new JDatePickerImpl(datePanelOrderDate, new DateLabelFormatter());
     private JTextField txtOrderCustomerId = new JTextField(10);
     private JButton btnAddOrder = new JButton("Añadir");
     private JButton btnUpdateOrder = new JButton("Actualizar");
@@ -26,7 +35,9 @@ public class Vista extends JFrame {
     private JButton btnFindOrder = new JButton("Buscar");
 
     private JTextField txtShipmentId = new JTextField(10);
-    private JTextField txtShipmentDate = new JTextField(10);
+    private UtilDateModel modelShipmentDate = new UtilDateModel();
+    private JDatePanelImpl datePanelShipmentDate = new JDatePanelImpl(modelShipmentDate, new Properties());
+    private JDatePickerImpl datePickerShipmentDate = new JDatePickerImpl(datePanelShipmentDate, new DateLabelFormatter());
     private JTextField txtShipmentOrderId = new JTextField(10);
     private JButton btnAddShipment = new JButton("Añadir");
     private JButton btnUpdateShipment = new JButton("Actualizar");
@@ -36,7 +47,7 @@ public class Vista extends JFrame {
     public Vista() {
         setTitle("Gestión de Tienda");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 300);
+        setSize(600, 400);
         setLocationRelativeTo(null);
         JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -142,7 +153,7 @@ public class Vista extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        orderPanel.add(txtOrderDate, gbc);
+        orderPanel.add(datePickerOrderDate, gbc);
 
         // Customer ID
         gbc.gridx = 2;
@@ -202,7 +213,7 @@ public class Vista extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        shipmentPanel.add(txtShipmentDate, gbc);
+        shipmentPanel.add(datePickerShipmentDate, gbc);
 
         // Order ID
         gbc.gridx = 2;
@@ -312,8 +323,8 @@ public class Vista extends JFrame {
         }
     }
 
-    public String getOrderDate() {
-        return txtOrderDate.getText();
+    public Date getOrderDate() {
+        return (Date) datePickerOrderDate.getModel().getValue();
     }
 
     public int getOrderCustomerId() {
@@ -325,7 +336,7 @@ public class Vista extends JFrame {
     }
 
     public boolean areOrderFieldsValid() {
-        return !getOrderDate().isEmpty() && getOrderCustomerId() != -1;
+        return getOrderDate() != null && getOrderCustomerId() != -1;
     }
 
     public void addOrderListener(ActionListener listenForAddButton) {
@@ -344,8 +355,9 @@ public class Vista extends JFrame {
         btnFindOrder.addActionListener(listenForFindButton);
     }
 
-    public void displayOrderInfo(String orderDate, int customerId) {
-        String message = String.format("Fecha de Orden: %s\nCustomer ID: %d", orderDate, customerId);
+    public void displayOrderInfo(Date orderDate, int customerId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String message = String.format("Fecha de Orden: %s\nCustomer ID: %d", sdf.format(orderDate), customerId);
         JOptionPane.showMessageDialog(this, message, "Información de la Orden", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -358,8 +370,8 @@ public class Vista extends JFrame {
         }
     }
 
-    public String getShipmentDate() {
-        return txtShipmentDate.getText();
+    public Date getShipmentDate() {
+        return (Date) datePickerShipmentDate.getModel().getValue();
     }
 
     public int getShipmentOrderId() {
@@ -371,7 +383,7 @@ public class Vista extends JFrame {
     }
 
     public boolean areShipmentFieldsValid() {
-        return !getShipmentDate().isEmpty() && getShipmentOrderId() != -1;
+        return getShipmentDate() != null && getShipmentOrderId() != -1;
     }
 
     public void addShipmentListener(ActionListener listenForAddButton) {
@@ -390,8 +402,9 @@ public class Vista extends JFrame {
         btnFindShipment.addActionListener(listenForFindButton);
     }
 
-    public void displayShipmentInfo(String shipmentDate, int orderId) {
-        String message = String.format("Fecha de Envío: %s\nOrder ID: %d", shipmentDate, orderId);
+    public void displayShipmentInfo(Date shipmentDate, int orderId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String message = String.format("Fecha de Envío: %s\nOrder ID: %d", sdf.format(shipmentDate), orderId);
         JOptionPane.showMessageDialog(this, message, "Información del Envío", JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class Controlador {
     private Vista view;
@@ -97,7 +98,7 @@ public class Controlador {
                     view.displayErrorMessage("¡Todos los campos deben estar completos!");
                     return;
                 }
-                model.addOrder(java.sql.Date.valueOf(view.getOrderDate()), view.getOrderCustomerId());
+                model.addOrder(new java.sql.Date(view.getOrderDate().getTime()), view.getOrderCustomerId());
                 view.displayErrorMessage("¡Orden añadida exitosamente!");
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
@@ -112,7 +113,7 @@ public class Controlador {
                     view.displayErrorMessage("¡Todos los campos deben estar completos!");
                     return;
                 }
-                model.updateOrder(view.getOrderId(), java.sql.Date.valueOf(view.getOrderDate()), view.getOrderCustomerId());
+                model.updateOrder(view.getOrderId(), new java.sql.Date(view.getOrderDate().getTime()), view.getOrderCustomerId());
                 view.displayErrorMessage("¡Orden actualizada exitosamente!");
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
@@ -136,7 +137,7 @@ public class Controlador {
             try {
                 ResultSet rs = model.findOrder(view.getOrderId());
                 if (rs.next()) {
-                    view.displayOrderInfo(rs.getString("order_date"), rs.getInt("customer_id"));
+                    view.displayOrderInfo(rs.getDate("order_date"), rs.getInt("customer_id"));
                 } else {
                     view.displayErrorMessage("Orden no encontrada.");
                 }
@@ -154,7 +155,7 @@ public class Controlador {
                     view.displayErrorMessage("¡Todos los campos deben estar completos!");
                     return;
                 }
-                model.addShipment(java.sql.Date.valueOf(view.getShipmentDate()), view.getShipmentOrderId());
+                model.addShipment(new java.sql.Date(view.getShipmentDate().getTime()), view.getShipmentOrderId());
                 view.displayErrorMessage("¡Envío añadido exitosamente!");
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
@@ -169,7 +170,7 @@ public class Controlador {
                     view.displayErrorMessage("¡Todos los campos deben estar completos!");
                     return;
                 }
-                model.updateShipment(view.getShipmentId(), java.sql.Date.valueOf(view.getShipmentDate()), view.getShipmentOrderId());
+                model.updateShipment(view.getShipmentId(), new java.sql.Date(view.getShipmentDate().getTime()), view.getShipmentOrderId());
                 view.displayErrorMessage("¡Envío actualizado exitosamente!");
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
@@ -193,7 +194,7 @@ public class Controlador {
             try {
                 ResultSet rs = model.findShipment(view.getShipmentId());
                 if (rs.next()) {
-                    view.displayShipmentInfo(rs.getString("shipment_date"), rs.getInt("order_id"));
+                    view.displayShipmentInfo(rs.getDate("shipment_date"), rs.getInt("order_id"));
                 } else {
                     view.displayErrorMessage("Envío no encontrado.");
                 }
