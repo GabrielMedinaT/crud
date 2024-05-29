@@ -3,11 +3,15 @@ package crud;
 import java.sql.*;
 
 public class Modelo {
+
     private Connection connection;
 
     public Modelo() {
         try {
             connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306", "root", "root1234");
+            createDatabase();
+            connect();
+            createTables();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -28,19 +32,20 @@ public class Modelo {
     // Creación de tablas en la base de datos con sus respectivas columnas y con delete on cascade
     public void createTables() throws SQLException {
         Statement statement = connection.createStatement();
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Customers (customer_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), address VARCHAR(255), email VARCHAR(255))");
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Orders (order_id INT PRIMARY KEY AUTO_INCREMENT, order_date DATE, customer_id INT, FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE)");
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Shipments (shipment_id INT PRIMARY KEY AUTO_INCREMENT, shipment_date DATE, order_id INT, FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE)");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Customers (customer_id INT PRIMARY KEY, name VARCHAR(255), address VARCHAR(255), email VARCHAR(255))");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Orders (order_id INT PRIMARY KEY , order_date DATE, customer_id INT, FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE)");
+        statement.executeUpdate("CREATE TABLE IF NOT EXISTS Shipments (shipment_id INT PRIMARY KEY , shipment_date DATE, order_id INT, FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE)");
         statement.close();
     }
 
     // Métodos para Customers
-    public void addCustomer(String name, String address, String email) throws SQLException {
-        String query = "INSERT INTO Customers (name, address, email) VALUES (?, ?, ?)";
+    public void addCustomer(int customerId, String name, String address, String email) throws SQLException {
+        String query = "INSERT INTO Customers (customer_id, name, address, email) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, name);
-        ps.setString(2, address);
-        ps.setString(3, email);
+        ps.setInt(1, customerId);
+        ps.setString(2, name);
+        ps.setString(3, address);
+        ps.setString(4, email);
         ps.executeUpdate();
         ps.close();
     }
@@ -69,6 +74,12 @@ public class Modelo {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, customerId);
         return ps.executeQuery();
+    }
+
+    public ResultSet getAllCustomers() throws SQLException {
+        String query = "SELECT * FROM Customers";
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
     }
 
     // Métodos para Orders
@@ -106,6 +117,12 @@ public class Modelo {
         return ps.executeQuery();
     }
 
+    public ResultSet getAllOrders() throws SQLException {
+        String query = "SELECT * FROM Orders";
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
+    }
+
     // Métodos para Shipments
     public void addShipment(Date shipmentDate, int orderId) throws SQLException {
         String query = "INSERT INTO Shipments (shipment_date, order_id) VALUES (?, ?)";
@@ -139,5 +156,25 @@ public class Modelo {
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setInt(1, shipmentId);
         return ps.executeQuery();
+    }
+
+    public ResultSet getAllShipments() throws SQLException {
+        String query = "SELECT * FROM Shipments";
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
+    }
+
+    // Obtener todos los Customer IDs
+    public ResultSet getAllCustomerIDs() throws SQLException {
+        String query = "SELECT customer_id FROM Customers";
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
+    }
+
+    // Obtener todos los Order IDs
+    public ResultSet getAllOrderIDs() throws SQLException {
+        String query = "SELECT order_id FROM Orders";
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
     }
 }

@@ -19,18 +19,21 @@ public class Controlador {
         this.view.updateCustomerListener(new UpdateCustomerListener());
         this.view.deleteCustomerListener(new DeleteCustomerListener());
         this.view.findCustomerListener(new FindCustomerListener());
+        this.view.showAllCustomersListener(new ShowAllCustomersListener());
 
         // Listeners para Orders
         this.view.addOrderListener(new AddOrderListener());
         this.view.updateOrderListener(new UpdateOrderListener());
         this.view.deleteOrderListener(new DeleteOrderListener());
         this.view.findOrderListener(new FindOrderListener());
+        this.view.showAllOrdersListener(new ShowAllOrdersListener());
 
         // Listeners para Shipments
         this.view.addShipmentListener(new AddShipmentListener());
         this.view.updateShipmentListener(new UpdateShipmentListener());
         this.view.deleteShipmentListener(new DeleteShipmentListener());
         this.view.findShipmentListener(new FindShipmentListener());
+        this.view.showAllShipmentsListener(new ShowAllShipmentsListener());
     }
 
     // Customer Listeners
@@ -38,11 +41,16 @@ public class Controlador {
         public void actionPerformed(ActionEvent e) {
             try {
                 if (!view.areCustomerFieldsValid()) {
-                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    if (!view.isValidEmail(view.getCustomerEmail())) {
+                        view.displayErrorMessage("Email no es válido.");
+                    } else {
+                        view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    }
                     return;
                 }
-                model.addCustomer(view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
+                model.addCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
                 view.displayErrorMessage("¡Cliente añadido exitosamente!");
+                
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
             }
@@ -53,7 +61,11 @@ public class Controlador {
         public void actionPerformed(ActionEvent e) {
             try {
                 if (!view.areCustomerFieldsValid()) {
-                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    if (!view.isValidEmail(view.getCustomerEmail())) {
+                        view.displayErrorMessage("Email no es válido.");
+                    } else {
+                        view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    }
                     return;
                 }
                 model.updateCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
@@ -90,6 +102,17 @@ public class Controlador {
         }
     }
 
+    class ShowAllCustomersListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                ResultSet rs = model.getAllCustomers();
+                view.displayAllCustomers(rs);
+            } catch (SQLException ex) {
+                view.displayErrorMessage("Error: " + ex.getMessage());
+            }
+        }
+    }
+
     // Order Listeners
     class AddOrderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -101,7 +124,11 @@ public class Controlador {
                 model.addOrder(new java.sql.Date(view.getOrderDate().getTime()), view.getOrderCustomerId());
                 view.displayErrorMessage("¡Orden añadida exitosamente!");
             } catch (SQLException ex) {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+                if (ex.getMessage().contains("FOREIGN KEY")) {
+                    view.displayErrorMessage("Error: El ID del cliente no existe.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
@@ -116,7 +143,11 @@ public class Controlador {
                 model.updateOrder(view.getOrderId(), new java.sql.Date(view.getOrderDate().getTime()), view.getOrderCustomerId());
                 view.displayErrorMessage("¡Orden actualizada exitosamente!");
             } catch (SQLException ex) {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+                if (ex.getMessage().contains("FOREIGN KEY")) {
+                    view.displayErrorMessage("Error: El ID del cliente no existe.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
@@ -147,6 +178,17 @@ public class Controlador {
         }
     }
 
+    class ShowAllOrdersListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                ResultSet rs = model.getAllOrders();
+                view.displayAllOrders(rs);
+            } catch (SQLException ex) {
+                view.displayErrorMessage("Error: " + ex.getMessage());
+            }
+        }
+    }
+
     // Shipment Listeners
     class AddShipmentListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -158,7 +200,11 @@ public class Controlador {
                 model.addShipment(new java.sql.Date(view.getShipmentDate().getTime()), view.getShipmentOrderId());
                 view.displayErrorMessage("¡Envío añadido exitosamente!");
             } catch (SQLException ex) {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+                if (ex.getMessage().contains("FOREIGN KEY")) {
+                    view.displayErrorMessage("Error: El ID del pedido no existe.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
@@ -173,7 +219,11 @@ public class Controlador {
                 model.updateShipment(view.getShipmentId(), new java.sql.Date(view.getShipmentDate().getTime()), view.getShipmentOrderId());
                 view.displayErrorMessage("¡Envío actualizado exitosamente!");
             } catch (SQLException ex) {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+                if (ex.getMessage().contains("FOREIGN KEY")) {
+                    view.displayErrorMessage("Error: El ID del pedido no existe.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
@@ -198,6 +248,17 @@ public class Controlador {
                 } else {
                     view.displayErrorMessage("Envío no encontrado.");
                 }
+            } catch (SQLException ex) {
+                view.displayErrorMessage("Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    class ShowAllShipmentsListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                ResultSet rs = model.getAllShipments();
+                view.displayAllShipments(rs);
             } catch (SQLException ex) {
                 view.displayErrorMessage("Error: " + ex.getMessage());
             }
