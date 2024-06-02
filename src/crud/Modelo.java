@@ -83,14 +83,16 @@ public class Modelo {
     }
 
     // Métodos para Orders
-    public void addOrder(Date orderDate, int customerId) throws SQLException {
-        String query = "INSERT INTO Orders (order_date, customer_id) VALUES (?, ?)";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setDate(1, new java.sql.Date(orderDate.getTime()));
-        ps.setInt(2, customerId);
-        ps.executeUpdate();
-        ps.close();
-    }
+public void addOrder(int orderId, Date orderDate, int customerId) throws SQLException {
+    String query = "INSERT INTO Orders (order_id, order_date, customer_id) VALUES (?, ?, ?)";
+    PreparedStatement ps = connection.prepareStatement(query);
+    ps.setInt(1, orderId); // Corregido: setInt para el orderId
+    ps.setDate(2, new java.sql.Date(orderDate.getTime()));
+    ps.setInt(3, customerId);
+    ps.executeUpdate();
+    ps.close();
+}
+
 
     public void updateOrder(int orderId, Date orderDate, int customerId) throws SQLException {
         String query = "UPDATE Orders SET order_date=?, customer_id=? WHERE order_id=?";

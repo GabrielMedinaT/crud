@@ -37,25 +37,31 @@ public class Controlador {
     }
 
     // Customer Listeners
-    class AddCustomerListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            try {
-                if (!view.areCustomerFieldsValid()) {
-                    if (!view.isValidEmail(view.getCustomerEmail())) {
-                        view.displayErrorMessage("Email no es válido.");
-                    } else {
-                        view.displayErrorMessage("¡Todos los campos deben estar completos!");
-                    }
-                    return;
+// Customer Listeners
+class AddCustomerListener implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+        try {
+            if (!view.areCustomerFieldsValid()) {
+                if (!view.isValidEmail(view.getCustomerEmail())) {
+                    view.displayErrorMessage("Email no es válido.");
+                } else {
+                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
                 }
-                model.addCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
-                view.displayErrorMessage("¡Cliente añadido exitosamente!");
-                
-            } catch (SQLException ex) {
+                return;
+            }
+            model.addCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
+            view.displayErrorMessage("¡Cliente añadido exitosamente!");
+            view.updateCustomerIDs(); // Actualiza el JComboBox de IDs de clientes
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("Duplicate entry")) {
+                view.displayErrorMessage("Id de cliente ya existe, pruebe a poner otro.");
+            } else {
                 view.displayErrorMessage("Error: " + ex.getMessage());
             }
         }
     }
+}
+
 
     class UpdateCustomerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -114,24 +120,30 @@ public class Controlador {
     }
 
     // Order Listeners
-    class AddOrderListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            try {
-                if (!view.areOrderFieldsValid()) {
-                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
-                    return;
-                }
-                model.addOrder(new java.sql.Date(view.getOrderDate().getTime()), view.getOrderCustomerId());
-                view.displayErrorMessage("¡Orden añadida exitosamente!");
-            } catch (SQLException ex) {
-                if (ex.getMessage().contains("FOREIGN KEY")) {
-                    view.displayErrorMessage("Error: El ID del cliente no existe.");
-                } else {
-                    view.displayErrorMessage("Error: " + ex.getMessage());
-                }
+class AddOrderListener implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+        try {
+            if (!view.areOrderFieldsValid()) {
+                view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                return;
+            }
+            int orderId = view.getOrderId(); // Asegúrate de obtener el orderId de la vista
+            Date orderDate = view.getOrderDate();
+            int customerId = view.getOrderCustomerId();
+            model.addOrder(orderId, new java.sql.Date(orderDate.getTime()), customerId);
+            view.displayErrorMessage("¡Orden añadida exitosamente!");
+            view.updateOrderIDs(); // Actualiza el JComboBox de IDs de órdenes
+        } catch (SQLException ex) {
+            if (ex.getMessage().contains("FOREIGN KEY")) {
+                view.displayErrorMessage("Error: El ID del cliente no existe.");
+            } else {
+                view.displayErrorMessage("Error: " + ex.getMessage());
             }
         }
     }
+}
+
+
 
     class UpdateOrderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {

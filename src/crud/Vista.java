@@ -147,14 +147,13 @@ public class Vista extends JFrame {
         addValidation(txtCustomerEmail, "email");
 
         tabbedPane.addTab("Customers", customerPanel);
-
-        // Panel para Orders
+// Panel para Orders
         JPanel orderPanel = new JPanel(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Order ID
+// Order ID
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -165,25 +164,33 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         orderPanel.add(txtOrderId, gbc);
 
-        // Order Date
+// Customer ID
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        orderPanel.add(new JLabel("ID Cliente:"), gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        orderPanel.add(cbOrderCustomerId, gbc);
+
+// Order Date
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
         orderPanel.add(new JLabel("Fecha de Orden:"), gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 2;
         gbc.gridy = 1;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         orderPanel.add(datePickerOrderDate, gbc);
 
-        // Customer ID
-        gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        orderPanel.add(new JLabel("ID cliente:"), gbc);
-        orderPanel.add(cbOrderCustomerId, gbc);
 
-        // Order Buttons
+   
+
+// Order Buttons
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 1;
@@ -203,7 +210,7 @@ public class Vista extends JFrame {
         orderPanel.add(btnFindOrder, gbc);
 
         gbc.gridx = 4;
-        gbc.gridy = 4;
+        gbc.gridy = 2;
         orderPanel.add(btnShowAllOrders, gbc);
 
         addValidation(txtOrderId, "orderId");
@@ -297,6 +304,15 @@ public class Vista extends JFrame {
             ex.printStackTrace();
         }
     }
+public void updateCustomerIDs() {
+    cbOrderCustomerId.removeAllItems();
+    fillCustomerIDs(cbOrderCustomerId);
+}
+
+public void updateOrderIDs() {
+    cbShipmentOrderId.removeAllItems();
+    fillOrderIDs(cbShipmentOrderId);
+}
 
     private void addValidation(JTextField textField, String type) {
         textField.addKeyListener(new KeyAdapter() {
