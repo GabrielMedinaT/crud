@@ -3,13 +3,9 @@ package crud;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 
-import org.jdatepicker.impl.UtilDateModel;
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
+
 
 
 public class DateLabelFormatter extends AbstractFormatter {

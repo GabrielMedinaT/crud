@@ -147,13 +147,14 @@ public class Vista extends JFrame {
         addValidation(txtCustomerEmail, "email");
 
         tabbedPane.addTab("Customers", customerPanel);
-// Panel para Orders
+
+        // Panel para Orders
         JPanel orderPanel = new JPanel(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-// Order ID
+        // Order ID
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -164,7 +165,7 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         orderPanel.add(txtOrderId, gbc);
 
-// Customer ID
+        // Customer ID
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
@@ -175,7 +176,7 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         orderPanel.add(cbOrderCustomerId, gbc);
 
-// Order Date
+        // Order Date
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
@@ -187,10 +188,7 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         orderPanel.add(datePickerOrderDate, gbc);
 
-
-   
-
-// Order Buttons
+        // Order Buttons
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 1;
@@ -234,22 +232,28 @@ public class Vista extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         shipmentPanel.add(txtShipmentId, gbc);
 
+        // Order ID
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        shipmentPanel.add(new JLabel("Order ID:"), gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        shipmentPanel.add(cbShipmentOrderId, gbc);
+
         // Shipment Date
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
         shipmentPanel.add(new JLabel("Fecha de Envío:"), gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 2;
         gbc.gridy = 1;
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         shipmentPanel.add(datePickerShipmentDate, gbc);
-
-        // Order ID
-        gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        shipmentPanel.add(cbShipmentOrderId, gbc);
 
         // Shipment Buttons
         gbc.gridx = 0;
@@ -304,32 +308,48 @@ public class Vista extends JFrame {
             ex.printStackTrace();
         }
     }
-public void updateCustomerIDs() {
-    cbOrderCustomerId.removeAllItems();
-    fillCustomerIDs(cbOrderCustomerId);
-}
 
-public void updateOrderIDs() {
-    cbShipmentOrderId.removeAllItems();
-    fillOrderIDs(cbShipmentOrderId);
-}
+    public void updateCustomerIDs() {
+        cbOrderCustomerId.removeAllItems();
+        fillCustomerIDs(cbOrderCustomerId);
+    }
+
+    public void updateOrderIDs() {
+        cbShipmentOrderId.removeAllItems();
+        fillOrderIDs(cbShipmentOrderId);
+    }
 
     private void addValidation(JTextField textField, String type) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
+                String charStr = String.valueOf(e.getKeyChar());
+                String currentText = textField.getText();
+
+                // Condición para customerId, orderId, shipmentId
                 if (type.equals("customerId") || type.equals("orderId") || type.equals("shipmentId")) {
-                    if (textField.getText().length() >= 4 || !Character.isDigit(e.getKeyChar())) {
+                    if (currentText.length() >= 4 || !Character.isDigit(e.getKeyChar())) {
                         e.consume();
+                        return;
                     }
-                } else if (textField.getText().length() >= 30) {
+                }
+
+                // Condición para longitud máxima de 30 caracteres
+                if (currentText.length() >= 30) {
                     e.consume();
-                } else if (type.equals("email")) {
-                    if (!Pattern.matches("[a-zA-Z0-9@._]", String.valueOf(e.getKeyChar()))) {
+                    return;
+                }
+
+                // Condición para email
+                if (type.equals("email")) {
+                    if (!Pattern.matches("[a-zA-Z0-9@._]", charStr)) {
                         e.consume();
+                        return;
                     }
                 } else {
-                    if (!Pattern.matches("[a-zA-Z0-9 ]", String.valueOf(e.getKeyChar()))) {
+                    // Condición general
+                    if (!Pattern.matches("[a-zA-Z0-9 ]", charStr)) {
                         e.consume();
+                        return;
                     }
                 }
             }
@@ -783,7 +803,7 @@ public void updateOrderIDs() {
     // Método para mostrar información de una orden en los campos de texto correspondientes
     public void displayOrderInfo(Date orderDate, int customerId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Object orderId = null;
+        int orderId = getOrderId(); // Obtener el valor real de Order ID
         txtOrderId.setText(String.valueOf(orderId));
         datePickerOrderDate.getModel().setDate(orderDate.getYear() + 1900, orderDate.getMonth(), orderDate.getDate());
         datePickerOrderDate.getModel().setSelected(true);
@@ -793,7 +813,7 @@ public void updateOrderIDs() {
     // Método para mostrar información de un envío en los campos de texto correspondientes
     public void displayShipmentInfo(Date shipmentDate, int orderId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Object shipmentId = null;
+        int shipmentId = getShipmentId(); // Obtener el valor real de Shipment ID
         txtShipmentId.setText(String.valueOf(shipmentId));
         datePickerShipmentDate.getModel().setDate(shipmentDate.getYear() + 1900, shipmentDate.getMonth(), shipmentDate.getDate());
         datePickerShipmentDate.getModel().setSelected(true);

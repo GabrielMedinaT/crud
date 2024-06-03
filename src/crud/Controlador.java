@@ -37,31 +37,29 @@ public class Controlador {
     }
 
     // Customer Listeners
-// Customer Listeners
-class AddCustomerListener implements ActionListener {
-    public void actionPerformed(ActionEvent e) {
-        try {
-            if (!view.areCustomerFieldsValid()) {
-                if (!view.isValidEmail(view.getCustomerEmail())) {
-                    view.displayErrorMessage("Email no es válido.");
-                } else {
-                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
+    class AddCustomerListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                if (!view.areCustomerFieldsValid()) {
+                    if (!view.isValidEmail(view.getCustomerEmail())) {
+                        view.displayErrorMessage("Email no es válido.");
+                    } else {
+                        view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    }
+                    return;
                 }
-                return;
-            }
-            model.addCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
-            view.displayErrorMessage("¡Cliente añadido exitosamente!");
-            view.updateCustomerIDs(); // Actualiza el JComboBox de IDs de clientes
-        } catch (SQLException ex) {
-            if (ex.getMessage().contains("Duplicate entry")) {
-                view.displayErrorMessage("Id de cliente ya existe, pruebe a poner otro.");
-            } else {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+                model.addCustomer(view.getCustomerId(), view.getCustomerName(), view.getCustomerAddress(), view.getCustomerEmail());
+                view.displayErrorMessage("¡Cliente añadido exitosamente!");
+                view.updateCustomerIDs(); // Actualiza el JComboBox de IDs de clientes
+            } catch (SQLException ex) {
+                if (ex.getMessage().contains("Duplicate entry")) {
+                    view.displayErrorMessage("Id de cliente ya existe, pruebe a poner otro.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
-}
-
 
     class UpdateCustomerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -120,30 +118,28 @@ class AddCustomerListener implements ActionListener {
     }
 
     // Order Listeners
-class AddOrderListener implements ActionListener {
-    public void actionPerformed(ActionEvent e) {
-        try {
-            if (!view.areOrderFieldsValid()) {
-                view.displayErrorMessage("¡Todos los campos deben estar completos!");
-                return;
-            }
-            int orderId = view.getOrderId(); // Asegúrate de obtener el orderId de la vista
-            Date orderDate = view.getOrderDate();
-            int customerId = view.getOrderCustomerId();
-            model.addOrder(orderId, new java.sql.Date(orderDate.getTime()), customerId);
-            view.displayErrorMessage("¡Orden añadida exitosamente!");
-            view.updateOrderIDs(); // Actualiza el JComboBox de IDs de órdenes
-        } catch (SQLException ex) {
-            if (ex.getMessage().contains("FOREIGN KEY")) {
-                view.displayErrorMessage("Error: El ID del cliente no existe.");
-            } else {
-                view.displayErrorMessage("Error: " + ex.getMessage());
+    class AddOrderListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            try {
+                if (!view.areOrderFieldsValid()) {
+                    view.displayErrorMessage("¡Todos los campos deben estar completos!");
+                    return;
+                }
+                int orderId = view.getOrderId(); // Asegúrate de obtener el orderId de la vista
+                Date orderDate = view.getOrderDate();
+                int customerId = view.getOrderCustomerId();
+                model.addOrder(orderId, new java.sql.Date(orderDate.getTime()), customerId);
+                view.displayErrorMessage("¡Orden añadida exitosamente!");
+                view.updateOrderIDs(); // Actualiza el JComboBox de IDs de órdenes
+            } catch (SQLException ex) {
+                if (ex.getMessage().contains("FOREIGN KEY")) {
+                    view.displayErrorMessage("Error: El ID del cliente no existe.");
+                } else {
+                    view.displayErrorMessage("Error: " + ex.getMessage());
+                }
             }
         }
     }
-}
-
-
 
     class UpdateOrderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -209,7 +205,12 @@ class AddOrderListener implements ActionListener {
                     view.displayErrorMessage("¡Todos los campos deben estar completos!");
                     return;
                 }
-                model.addShipment(new java.sql.Date(view.getShipmentDate().getTime()), view.getShipmentOrderId());
+
+                int shipmentId = view.getShipmentId(); // Obtener el ID del envío desde la vista
+                Date shipmentDate = new java.sql.Date(view.getShipmentDate().getTime()); // Obtener la fecha del envío
+                int orderId = view.getShipmentOrderId(); // Obtener el ID del pedido
+
+                model.addShipment(shipmentId, (java.sql.Date) shipmentDate, orderId); // Llamar al método del modelo con los parámetros correctos
                 view.displayErrorMessage("¡Envío añadido exitosamente!");
             } catch (SQLException ex) {
                 if (ex.getMessage().contains("FOREIGN KEY")) {

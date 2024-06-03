@@ -83,16 +83,15 @@ public class Modelo {
     }
 
     // Métodos para Orders
-public void addOrder(int orderId, Date orderDate, int customerId) throws SQLException {
-    String query = "INSERT INTO Orders (order_id, order_date, customer_id) VALUES (?, ?, ?)";
-    PreparedStatement ps = connection.prepareStatement(query);
-    ps.setInt(1, orderId); // Corregido: setInt para el orderId
-    ps.setDate(2, new java.sql.Date(orderDate.getTime()));
-    ps.setInt(3, customerId);
-    ps.executeUpdate();
-    ps.close();
-}
-
+    public void addOrder(int orderId, Date orderDate, int customerId) throws SQLException {
+        String query = "INSERT INTO Orders (order_id, order_date, customer_id) VALUES (?, ?, ?)";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, orderId); // Corregido: setInt para el orderId
+        ps.setDate(2, new java.sql.Date(orderDate.getTime()));
+        ps.setInt(3, customerId);
+        ps.executeUpdate();
+        ps.close();
+    }
 
     public void updateOrder(int orderId, Date orderDate, int customerId) throws SQLException {
         String query = "UPDATE Orders SET order_date=?, customer_id=? WHERE order_id=?";
@@ -126,13 +125,21 @@ public void addOrder(int orderId, Date orderDate, int customerId) throws SQLExce
     }
 
     // Métodos para Shipments
-    public void addShipment(Date shipmentDate, int orderId) throws SQLException {
-        String query = "INSERT INTO Shipments (shipment_date, order_id) VALUES (?, ?)";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setDate(1, new java.sql.Date(shipmentDate.getTime()));
-        ps.setInt(2, orderId);
-        ps.executeUpdate();
-        ps.close();
+    public void addShipment(int shipmentId, Date shipmentDate, int orderId) throws SQLException {
+        String query = "INSERT INTO Shipments (shipment_id, shipment_date, order_id) VALUES (?, ?, ?)";
+        PreparedStatement ps = null;
+
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setInt(1, shipmentId);
+            ps.setDate(2, new java.sql.Date(shipmentDate.getTime()));
+            ps.setInt(3, orderId);
+            ps.executeUpdate();
+        } finally {
+            if (ps != null) {
+                ps.close();
+            }
+        }
     }
 
     public void updateShipment(int shipmentId, Date shipmentDate, int orderId) throws SQLException {
